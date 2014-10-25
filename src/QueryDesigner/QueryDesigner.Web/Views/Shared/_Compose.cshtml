@@ -1,0 +1,71 @@
+﻿@model QueryDesigner.Web.Models.QueryRequestModel
+
+
+<div class="container" data-role="query-composer">
+
+    <div class="row">
+        @using (Html.BeginForm("Execute", "Query", FormMethod.Post, new Dictionary<string, object> { { "id", "frmQueryCompose" }, { "class", "form" }, { "role", "form" } }))
+        {
+            <div class="MacroToolbar">
+
+            </div>
+
+            <div class="form-group">
+                @Html.LabelFor(x => x.Query)
+
+                @Html.TextAreaFor(x => x.Query, 8, 1, new Dictionary<string, object> { { "class", "form-control" }, { "style", "width: 300px;" } })
+            </div>
+
+            <input type="submit" class="btn btn-primary form-control" value="Execute" />
+        }
+    </div>
+
+    <br />
+
+    <div class="row" id="divQueryResults">
+
+    </div>
+</div>
+
+
+<script type="text/javascript">
+
+    $(document).ready(function () {
+
+        //var mime = 'text/x-mariadb';
+        var mime = 'text/x-mssql';
+        //var mime = 'sql';
+
+        @*window.editor = CodeMirror.fromTextArea(document.getElementById('@Html.IdFor(x=>x.Query)'), {
+            mode: mime,
+            indentWithTabs: true,
+            smartIndent: true,
+            //lineNumbers: true,
+            lineNumbers: false,
+            matchBrackets: true,
+            autofocus: false,
+            value: 'test'
+        });*@
+
+
+        $('#frmQueryCompose').on('submit', function () {
+            $('#divQueryResults').html('');
+
+            $.ajax({
+                data: $(this).serialize(),
+                type: 'POST',
+                url: '@Url.Action("Execute", "Query")',
+                success: function (data) {
+                    $('#divQueryResults').html(data);
+                },
+                error: function (data, xhr, textStatus) {
+                    //console.log("ERROR", arguments);
+                    $('#divQueryResults').html('<p class="text-danger">' + textStatus + '</p>');
+                }
+            });
+            return false;
+        });
+
+    });
+
+</script>

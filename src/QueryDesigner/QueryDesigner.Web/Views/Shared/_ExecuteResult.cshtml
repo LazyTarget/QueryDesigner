@@ -1,0 +1,38 @@
+﻿@model QueryDesigner.Web.Models.QueryResultViewModel
+
+<div class="QueryResults">
+
+    @foreach (var tbl in Model.Data)
+    {
+        <table class="table">
+            <thead>
+                <tr>
+                    @foreach (var col in tbl.Columns)
+                    {
+                        <th data-json="@Json.Encode(col)">
+                            @col.Name
+                        </th>
+                    }
+                </tr>
+            </thead>
+
+            <tbody>
+
+                @foreach (var row in tbl.Rows)
+                {
+                    <tr>
+                        @foreach (var cell in row.Cells)
+                        {
+                            <td>
+                                @cell.Value
+                            </td>
+                        }
+                    </tr>
+                }
+
+            </tbody>
+
+        </table>
+    }
+
+</div>
