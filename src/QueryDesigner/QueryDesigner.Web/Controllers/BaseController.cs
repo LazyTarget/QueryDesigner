@@ -9,14 +9,21 @@ namespace QueryDesigner.Web.Controllers
 {
     public class BaseController : Controller
     {
-        private JsonSerializerSettings _jsonSerializerSettings = new JsonSerializerSettings
+        private readonly JsonSerializerSettings _jsonSerializerSettings = new JsonSerializerSettings
         {
             Formatting = Formatting.Indented,
             ReferenceLoopHandling = ReferenceLoopHandling.Error
         };
 
 
-        private readonly Lazy<IDataSource<SqlQuery>> _dataSource = new Lazy<IDataSource<SqlQuery>>(() =>
+        private readonly Lazy<DataContext> _dataContext = new Lazy<DataContext>(() =>
+        {
+            var connString = ConfigurationManager.ConnectionStrings["DefaultConnection"];
+            var context = new DataContext();
+            return context;
+        });
+
+        private readonly Lazy<IDataSource<SqlQuery>> _userDataSource = new Lazy<IDataSource<SqlQuery>>(() =>
         {
             var connString = ConfigurationManager.ConnectionStrings["DefaultConnection"];
             IDataSource<SqlQuery> dataSource = new SqlDatabase(connString.ConnectionString);
@@ -25,9 +32,14 @@ namespace QueryDesigner.Web.Controllers
 
 
 
-        protected IDataSource<SqlQuery> DataSource
+        protected IDataSource<SqlQuery> GetUserDataSource()
         {
-            get { return _dataSource.Value; }
+            return _userDataSource.Value;
+        }
+
+        protected DataContext DataContext
+        {
+            get { return _dataContext.Value; }
         }
 
 

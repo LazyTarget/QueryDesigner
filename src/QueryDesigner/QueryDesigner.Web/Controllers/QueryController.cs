@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Web.Mvc;
 using QueryDesigner.Core;
 using QueryDesigner.Web.Models;
@@ -23,11 +24,25 @@ namespace QueryDesigner.Web.Controllers
         {
             try
             {
+                var temp = new User
+                {
+                    Username = "Peter",
+                    Email = "peter@sourcetech.se"
+                };
+                var user = DataContext.Users.FirstOrDefault(x => x.Username == temp.Username);
+                if (user == null)
+                {
+                    DataContext.Users.Add(temp);
+                    DataContext.SaveChanges();
+                }
+
+
+
                 var query = new SqlQuery
                 {
                     Sql = request.Query
                 };
-                IQueryResult result = DataSource.Execute(query);
+                IQueryResult result = GetUserDataSource().Execute(query);
                 var model = QueryResultViewModel.Generate(result);
 
                 //var json = JsonResult(model);
